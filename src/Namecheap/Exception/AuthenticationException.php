@@ -1,9 +1,11 @@
-<?php 
+<?php
 
 namespace Namecheap\Exception;
 
-class AuthenticationException extends \RuntimeException {
-	
+use RuntimeException;
+
+class AuthenticationException extends RuntimeException
+{
+
 }
 
-?>

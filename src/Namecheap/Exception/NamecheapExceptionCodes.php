@@ -1,10 +1,11 @@
-<?php 
+<?php
 
 namespace Namecheap\Exception;
 
-class NamecheapExceptionCodes {
-	
-	public static self::$ncErrorCodes = [
+class NamecheapExceptionCodes
+{
+
+    public static $ncErrorCodes = [
 	    # Common for all commands
 	    'globalErrorCodes' => [
 	    	1010101 => 	'Parameter APIUser is missing',
@@ -452,4 +453,3 @@ class NamecheapExceptionCodes {
 
 }
 
-?>

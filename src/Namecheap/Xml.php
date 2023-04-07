@@ -1,13 +1,14 @@
-<?php 
+<?php
 namespace Namecheap;
+
 use DOMDocument;
 use Exception;
 
 /**
  * @Usage : $arr = Xml::createArray($xml);
  */
-
-class Xml {
+class Xml
+{
     private static $xml = null;
     private static $encoding = 'UTF-8';
 
@@ -24,14 +25,15 @@ class Xml {
         self::$xml->formatOutput = $format_output;
         self::$encoding = $encoding;
     }
+
     /**
      * Convert an XML string or DOMDocument to an Array.
      *
      * @param $input_xml string|DOMDocument
      *
+     * @return array
      * @throws Exception
      *
-     * @return array
      */
     public static function &createArray($input_xml)
     {
@@ -104,14 +106,14 @@ class Xml {
                 if ($node->attributes->length) {
                     $a = [];
                     foreach ($node->attributes as $attrName => $attrNode) {
-                        $a[$attrName] = (string) $attrNode->value;
+                        $a[$attrName] = (string)$attrNode->value;
                     }
                     // if its an leaf node, store the value in @value instead of directly storing it.
                     if (!is_array($output) && !empty($output)) {
                         $output = ['__text' => $output];
                         if (count($a)) {
                             foreach ($a as $kk => $vv) {
-                                $output['_'.$kk] = $vv;
+                                $output['_' . $kk] = $vv;
                             }
                         }
                     } else {
@@ -120,7 +122,7 @@ class Xml {
                         }
 
                         foreach ($a as $k => $v) {
-                            $output['_'.$k] = $v;       
+                            $output['_' . $k] = $v;
                         }
                     }
                 }
@@ -128,6 +130,7 @@ class Xml {
         }
         return $output;
     }
+
     /**
      * Get the root XML node, if there isn't one, create it.
      *
@@ -142,4 +145,4 @@ class Xml {
     }
 }
 
-?>
+
