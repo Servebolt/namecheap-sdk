@@ -1,0 +1,25 @@
+{
+    "name": "rubensrocha/namecheap-sdk",
+    "description": "SDK library for Namecheap APIs",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["Namecheap", "api", "namecheap SDK", "namecheap php"],
+    "authors": [
+        {
+            "name": "Saddam Hossain",
+            "email": "saddamrhossain@gmail.com"
+        },
+        {
+            "name": "Rubens Rocha",
+            "email": "smartyscripts@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Namecheap\\": "src/Namecheap"
+        }
+    },
+    "require": {
+        "php": "^5.6|^7|^8.0|^8.1"
+    }
+}
