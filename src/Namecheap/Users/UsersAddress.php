@@ -43,6 +43,7 @@ class UsersAddress extends Api
      * str|PhoneExt|opt        : PhoneExt of the user
      * str|Fax|opt            : Fax number in the format +NNN.NNNNNNNNNN
      * @param $param array
+     * @throws Exception
      */
     public function create(array $param)
     {
@@ -139,6 +140,7 @@ class UsersAddress extends Api
      * str|Address2|req        : StreetAddress2 of the user
      * str|PhoneExt|req        : PhoneExt of the user
      * str|Fax|req            : Fax number in the format +NNN.NNNNNNNNNN
+     * @throws Exception
      */
     public function update(array $param)
     {

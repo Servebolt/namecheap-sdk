@@ -117,7 +117,7 @@ class Xml
                             }
                         }
                     } else {
-                        if (is_string($output) && empty($output)) {
+                        if (is_string($output)) {
                             $output = [];
                         }
 

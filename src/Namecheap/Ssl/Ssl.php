@@ -3,7 +3,6 @@
 namespace Namecheap\Ssl;
 
 use Namecheap\Api;
-use Namecheap\Exception\NamecheapException;
 
 /**
  * Namecheap API wrapper
@@ -17,50 +16,50 @@ use Namecheap\Exception\NamecheapException;
  */
 class Ssl extends Api
 {
-
-    protected $command = 'namecheap.ssl.';
+    protected string $command = 'namecheap.ssl.';
 
     /**
      * Creates a new SSL certificate.
-     * @param $years num|Years|req : Number of years SSL will be issued for Allowed values: 1,2
-     * @param $type str|Type|req : SSL product name. See "Possible values for Type parameter" below this list.
-     * @param $sANStoADD num|SANStoADD|opt : Defines number of add-on domains to be purchased in addition to the default number of domains included into a multi-domain certificate.
-     * @param $promotionCode str|PromotionCode|opt : Promotional (coupon) code for the certificate
+     * @param int $Years Number of years SSL will be issued for Allowed values: 1,2
+     * @param string $Type SSL product name. See "Possible values for Type parameter" below this list.
+     * @param int|null $SANStoADD Defines number of add-on domains to be purchased in addition to the default number of domains included into a multi-domain certificate.
+     * @param string|null $PromotionCode Promotional (coupon) code for the certificate
      *
-     * ### Possible values for Type parameter:
+     * Possible values for Type parameter:
      * PositiveSSL, EssentialSSL, InstantSSL, InstantSSL Pro, PremiumSSL, EV SSL, PositiveSSL Wildcard, EssentialSSL Wildcard, PremiumSSL Wildcard, PositiveSSL Multi Domain, Multi Domain SSL, Unified Communications, EV Multi Domain SSL.
+     * @return bool|mixed|string
+     * @throws \Exception
      */
-    public function create($years, $type, $sANStoADD = null, $promotionCode = null)
+    public function create(int $Years, string $Type, ?int $SANStoADD = null, ?string $PromotionCode = null)
     {
-        $data = [
-            'Years' => $years,
-            'Type' => $type,
-            'SANStoADD' => $sANStoADD,
-            'PromotionCode' => $promotionCode,
-        ];
-
-        return $this->get($this->command . __FUNCTION__, $data);
+        return $this->get($this->command . __FUNCTION__, compact(
+            'Years',
+            'Type',
+            'SANStoADD',
+            'PromotionCode',
+        ));
     }
 
     /**
      * Returns a list of SSL certificates for the particular user.
      *
-     * @param $listTypestr |ListType|opt : Possible values are ALL,Processing,EmailSent,TechnicalProblem,InProgress, Completed,Deactivated,Active,Cancelled,NewPurchase, NewRenewal. Default Value: All
-     * @param $searchTerm str|SearchTerm|opt : Keyword to look for on the SSL list
-     * @param $page num|Page|opt : Page to return Default Value: 1
-     * @param $pageSize num|PageSize|opt : Total number of SSL certificates to display in a page. Minimum value is 10 and maximum value is 100. Default Value: 20
-     * @param $sortBy str|SortBy|opt : Possible values are PURCHASEDATE, PURCHASEDATE_DESC, SSLTYPE, SSLTYPE_DESC, EXPIREDATETIME, EXPIREDATETIME_DESC,Host_Name, Host_Name_DESC.
+     * @param string|null $ListType
+     * @param string|null $SearchTerm Keyword to look for on the SSL list
+     * @param int|null $Page Page to return Default Value: 1
+     * @param int|null $PageSize Total number of SSL certificates to display in a page. Minimum value is 10 and maximum value is 100. Default Value: 20
+     * @param int|null $SortBy Possible values are PURCHASEDATE, PURCHASEDATE_DESC, SSLTYPE, SSLTYPE_DESC, EXPIREDATETIME, EXPIREDATETIME_DESC,Host_Name, Host_Name_DESC.
+     * @return bool|mixed|string
+     * @throws \Exception
      */
-    public function getList($listType = null, $searchTerm = null, $page = null, $pageSize = null, $sortBy = null)
+    public function getList(?string $ListType = null, ?string $SearchTerm = null, ?int $Page = null, ?int $PageSize = null, ?int $SortBy = null)
     {
-        $data = [
-            'ListType' => $listType,
-            'SearchTerm' => $searchTerm,
-            'Page' => $page,
-            'PageSize' => $pageSize,
-            'SortBy' => $sortBy,
-        ];
-        return $this->get($this->command . __FUNCTION__, $data);
+        return $this->get($this->command . __FUNCTION__, compact(
+            'ListType',
+            'SearchTerm',
+            'Page',
+            'PageSize',
+            'SortBy',
+        ));
     }
 
     /**
@@ -83,8 +82,10 @@ class Ssl extends Api
     /**
      * Gets approver email list for the requested certificate.
      *
-     * @param $domainName str|DomainName|req        : Domain name to get the list
-     * @param $certificateType str|CertificateType|req    : Type of SSL certificate
+     * @param $domainName : Domain name to get the list
+     * @param $certificateType : Type of SSL certificate
+     * @return bool|mixed|string
+     * @throws \Exception
      */
     public function getApproverEmailList($domainName, $certificateType)
     {
@@ -96,66 +97,104 @@ class Ssl extends Api
     }
 
     /**
-     * Activates a purchased and non-activated SSL certificate by collecting and validating certificate request data and submitting it to Comodo.
+     * Activates a purchased and non-activated SSL certificate by collecting and validating certificate request data and submitting it to Comodo
      *
-     * num|CertificateID|req : Unique identifier of SSL certificate to be activated
-     * str|CSR|req : Certificate Signing Request (CSR)
-     * str|AdminEmailAddress|req : Email address to send signed SSL certificate file to
-     * str|WebServerType|opt : Server software where SSL will be installed. Defines SSL certificate file format (PEM or PKCS7). Allowed values: apacheopenssl, apachessl, apacheraven, apachessleay, apache2, apacheapachessl, tomcat, cpanel, ipswitch, plesk, weblogic, website, webstar, nginx, iis, iis4, iis5, c2net, ibmhttp, iplanet, domino, dominogo4625, dominogo4626, netscape, zeusv3, cobaltseries, ensim, hsphere, other
+     * Command can be run on purchased and non-activated SSLs in "Newpurchase" or "Newrenewal" status. Use getInfo and getList APIs to collect SSL status.
+     * Only supported products can be activated. See create API to learn supported products.
+     * Sandbox limitation: Activation process works for all certificates. However, an actual test certificate will not be returned for OV and EV certificates.
      *
-     * ## Command can be run on purchased and non-activated SSLs in "Newpurchase" or "Newrenewal" status. Use getInfo and getList APIs to collect SSL status.
-     * ## Only supported products can be activated. See create API to learn supported products.
-     * ## Sandbox limitation: Activation process works for all certificates. However, an actual test certificate will not be returned for OV and EV certificates.
+     * @param int $CertificateID
+     * @param string $CSR
+     * @param string|null $AdminEmailAddress
+     * @param string|null $WebServerType
+     * @param string|null $UniqueValue
+     * @return bool|mixed|string
+     * @throws \Exception
      */
-    public function activate(int $CertificateID, string $CSR, ?string $AdminEmailAddress = null, ?string $WebServerType = null, ?string $UniqueValue = null)
+    public function activate(
+        int     $CertificateID,
+        string  $CSR,
+        ?string $AdminFirstName = null,
+        ?string $AdminLastName = null,
+        ?string $AdminJobTitle = null,
+        ?string $AdminAddress = null,
+        ?string $AdminCity = null,
+        ?string $AdminStateProvince = null,
+        ?string $AdminPostalCode = null,
+        ?string $AdminCountry = null,
+        ?string $AdminPhone = null,
+        ?string $AdminEmailAddress = null,
+        ?string $ApproverEmail = null,
+        ?string $WebServerType = null,
+        ?string $UniqueValue = null
+    )
     {
-        return $this->get($this->command . __FUNCTION__, compact('CertificateID', 'CSR', 'AdminEmailAddress', 'WebServerType', 'UniqueValue'));
+        return $this->get($this->command . __FUNCTION__, compact(
+            'CertificateID',
+            'CSR',
+            'AdminFirstName',
+            'AdminLastName',
+            'AdminJobTitle',
+            'AdminAddress',
+            'AdminCity',
+            'AdminStateProvince',
+            'AdminPostalCode',
+            'AdminCountry',
+            'AdminPhone',
+            'AdminEmailAddress',
+            'ApproverEmail',
+            'WebServerType',
+            'UniqueValue'
+        ));
     }
 
     /**
      * Resends the approver email.
-     * @param $certificateID str|CertificateID|req : The unique certificate ID that you get after calling ssl.create command
+     * @param string $CertificateID
+     * @return bool|mixed|string
+     * @throws \Exception
      */
-    public function resendApproverEmail($certificateID)
+    public function resendApproverEmail(string $CertificateID)
     {
-        return $this->get($this->command . __FUNCTION__, ['CertificateID' => $certificateID]);
+        return $this->get($this->command . __FUNCTION__, ['CertificateID' => $CertificateID]);
     }
 
     /**
      * Retrieves information about the requested SSL certificate
      *
-     * @param $certificateID num|CertificateID|req    : Unique ID of the SSL certificate
-     * @param $returncertificate str|Returncertificate|opt : A flag for returning certificate in response
-     * @param $returntype str|Returntype|opt        : Type of returned certificate. Parameter takes “Individual” (for X.509 format) or “PKCS7” values.
+     * @param int $CertificateID Unique ID of the SSL certificate
+     * @param string|null $Returncertificate A flag for returning certificate in response
+     * @param string|null $Returntype Type of returned certificate. Parameter takes “Individual” (for X.509 format) or “PKCS7” values.
+     * @return bool|mixed|string
+     * @throws \Exception
      */
-    public function getInfo($certificateID, $returncertificate = null, $returntype = null)
+    public function getInfo(int $CertificateID, ?string $Returncertificate = null, ?string $Returntype = null)
     {
-        $data = [
-            'CertificateID' => $certificateID,
-            'Returncertificate' => $returncertificate,
-            'Returntype' => $returntype,
-        ];
-        return $this->get($this->command . __FUNCTION__, $data);
+        return $this->get($this->command . __FUNCTION__, compact(
+            'CertificateID',
+            'Returncertificate',
+            'Returntype',
+        ));
     }
 
     /**
      * Renews an SSL certificate.
      *
-     * @param $certificateIDstr |CertificateID|req : Unique ID of the SSL certificate you wish to renew
-     * @param $years str|Years|req : Number of years renewal SSL will be issued for Allowed values: 1,2
-     * @param $sSLType str|SSLType|req : SSL product name. See "Possible values for SSLType parameter" below this table.
-     * @param $promotionCode str|PromotionCode|opt : Promotional (coupon) code for the certificate
+     * @param int $CertificateID Unique ID of the SSL certificate you wish to renew
+     * @param int $Years Number of years renewal SSL will be issued for Allowed values: 1,2
+     * @param string $SSLType SSL product name. See "Possible values for SSLType parameter" below this table.
+     * @param string|null $PromotionCode str|PromotionCode|opt : Promotional (coupon) code for the certificate
+     * @return bool|mixed|string
+     * @throws \Exception
      */
-    public function renew($certificateID, $years, $sSLType, $promotionCode = null)
+    public function renew(int $CertificateID, int $Years, string $SSLType, ?string $PromotionCode = null)
     {
-        $data = [
-            'CertificateID' => $certificateID,
-            'Years' => $years,
-            'SSLType' => $sSLType,
-            'PromotionCode' => $promotionCode,
-        ];
-
-        return $this->post($this->command . __FUNCTION__, $data);
+        return $this->post($this->command . __FUNCTION__, compact(
+            'CertificateID',
+            'Years',
+            'SSLType',
+            'PromotionCode',
+        ));
     }
 
     /**

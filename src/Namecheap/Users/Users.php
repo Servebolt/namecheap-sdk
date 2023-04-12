@@ -91,6 +91,7 @@ class Users extends Api
      * str|Address2|opt        : StreetAddress2 of the user
      * str|PhoneExt|opt        : PhoneExt of the user
      * str|Fax|opt            : Fax number in the format +NNN.NNNNNNNNNN
+     * @throws Exception
      */
     public function update(array $param)
     {
@@ -184,6 +185,7 @@ class Users extends Api
      * str|Address2|opt : StreetAddress2 of the user
      * str|PhoneExt|opt : PhoneExt of the user
      * str|Fax|opt : Fax number in the format +NNN.NNNNNNNNNN
+     * @throws Exception
      */
     public function create(array $param)
     {

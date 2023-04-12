@@ -1,9 +1,9 @@
 <?php
+
 namespace Namecheap;
 
 use Exception;
 use Namecheap\Exception\AuthenticationException;
-use Namecheap\Xml;
 
 /**
  * Namecheap API wrapper
@@ -98,12 +98,18 @@ class Api
     }
 
     /*API call method for sending requests using GET*/
+    /**
+     * @throws Exception
+     */
     public function get($command, array $data = [])
     {
         return $this->request($command, $data, 'get');
     }
 
     /*API call method for sending requests using POST*/
+    /**
+     * @throws Exception
+     */
     public function post($command, array $data = [])
     {
         return $this->request($command, $data, 'post');
@@ -115,7 +121,7 @@ class Api
         return !empty($v) ? $v : null;
     }
 
-    protected function checkRequiredFields($dataArr, $requiredFields)
+    protected function checkRequiredFields($dataArr, $requiredFields): array
     {
         $reqFields = [];
         foreach ($requiredFields as $key => $f) {
@@ -124,6 +130,9 @@ class Api
         return $reqFields;
     }
 
+    /**
+     * @throws Exception
+     */
     protected function request($command, array $data = [], $type = 'get')
     {
         if (!isset($this->apiUser) || !isset($this->apiKey) || !isset($this->clientIp)) {
@@ -137,9 +146,9 @@ class Api
         $data['ClientIp'] = $this->clientIp;
         $data['Command'] = $command;
 
-        //Removes null entries
+        // Removes null entries
         $data = array_filter($data, function ($val) {
-            return !is_null($val);
+            return $val !== null;
         });
 
         $default_curl_options = [
@@ -147,7 +156,7 @@ class Api
             CURLOPT_FORBID_REUSE => true,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HEADER => false,
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_TIMEOUT => 60,
             CURLOPT_SSL_VERIFYPEER => true,
         ];
 
@@ -155,7 +164,6 @@ class Api
         if (isset($this->curl_options) && is_array($this->curl_options)) {
             $curl_options = array_replace($default_curl_options, $this->curl_options);
         }
-        $user_agent = __FILE__;
         $ch = curl_init();
         curl_setopt_array($ch, $curl_options);
 
@@ -172,7 +180,6 @@ class Api
 
         $xmlData = curl_exec($ch);
         $error = curl_error($ch);
-        $information = curl_getinfo($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         if (in_array($http_code, [401, 403])) {

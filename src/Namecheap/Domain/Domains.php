@@ -237,6 +237,7 @@ class Domains extends Api
      * str|auxBillingStateProvinceChoice|Opt : StateProvinceChoice of the auxBilling user
      * str|auxBillingPhoneExt|Opt : PhoneExt of the auxBilling user
      * str|auxBillingFax|Opt : Fax number in the format +NNN.NNNNNNNNNN
+     * @throws Exception
      */
     public function setContacts(array $domainInfo, array $contactInfo)
     {
@@ -348,6 +349,7 @@ class Domains extends Api
      *
      * @param $dd array domain details
      * @param $cd array contact details
+     * @throws Exception
      */
     private function parseDomainData($dd, $cd)
     {
@@ -396,6 +398,7 @@ class Domains extends Api
 
     /**
      * @param $d array domain
+     * @throws Exception
      */
     private function parseContactInfo($d)
     {
