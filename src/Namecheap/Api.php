@@ -146,7 +146,15 @@ class Api
         $data['ClientIp'] = $this->clientIp;
         $data['Command'] = $command;
 
-        // Removes null entries
+        // convert bool to string
+        $data = array_map(function ($val) {
+            if (is_bool($val)) {
+                return $val ? 'true' : 'false';
+            }
+            return $val;
+        }, $data);
+
+        // removes null entries
         $data = array_filter($data, function ($val) {
             return $val !== null;
         });
@@ -190,11 +198,12 @@ class Api
             throw new Exception($error);
         }
 
+        $data = array_shift(Xml::createArray($xmlData));
+
         if ($this->returnType === 'json') {
-            return json_encode(Xml::createArray($xmlData));
+            return json_encode($data);
         } else if ($this->returnType === 'array') {
-            $xml = simplexml_load_string($xmlData);
-            return json_decode(json_encode($xml), true);
+            return $data;
         }
         return $xmlData;
     }
