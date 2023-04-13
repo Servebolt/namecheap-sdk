@@ -125,6 +125,8 @@ class Ssl extends Api
         ?string $AdminPhone = null,
         ?string $AdminEmailAddress = null,
         ?string $ApproverEmail = null,
+        ?bool   $HTTPDCValidation = null,
+        ?bool   $DNSDCValidation = null,
         ?string $WebServerType = null,
         ?string $UniqueValue = null
     )
@@ -143,6 +145,8 @@ class Ssl extends Api
             'AdminPhone',
             'AdminEmailAddress',
             'ApproverEmail',
+            'HTTPDCValidation',
+            'DNSDCValidation',
             'WebServerType',
             'UniqueValue'
         ));
